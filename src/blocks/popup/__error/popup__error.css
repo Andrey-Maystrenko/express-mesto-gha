@@ -1,0 +1,26 @@
+.popup__error {
+    font-size  : 12px;
+    line-height: 15px;
+    color      : #FF0000;
+    visibility : hidden;
+    position   : absolute;
+    top        : 73px;
+    left       : 0px;
+}
+
+.popup__error:nth-of-type(2) {
+    top : 135px;
+    left: 0px;
+}
+
+@media screen and (max-width: 768px) {
+    .popup__error {
+        top : 95px;
+        left: 0px;
+    }
+
+    .popup__error:nth-of-type(2) {
+        top : 158px;
+        left: 0px;
+    }
+}

@@ -1,0 +1,33 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "[![Tests](https://github.com/Andrey-Maystrenko/express-mesto-gha/actions/workflows/tests-13-sprint.yml/badge.svg)](https://github.com/Andrey-Maystrenko/express-mesto-gha/actions/workflows/tests-13-sprint.yml) [![Tests](https://github.com/Andrey-Maystrenko/express-mesto-gha/actions/workflows/tests-14-sprint.yml/badge.svg)](https://github.com/Andrey-Maystrenko/express-mesto-gha/actions/workflows/tests-14-sprint.yml)\r # Проект Mesto фронтенд + бэкенд",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Andrey-Maystrenko/express-mesto-gha.git"
+  },
+  "author": "Andrey Maystrenko\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[D\u001b[-\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C\u001b[C",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Andrey-Maystrenko/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/Andrey-Maystrenko/express-mesto-gha#readme",
+  "devDependencies": {
+    "eslint": "^8.14.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-react": "^7.29.4",
+    "lint": "^0.7.0"
+  },
+  "dependencies": {
+    "express": "^4.18.1",
+    "mongoose": "^6.3.2",
+    "nodemon": "^2.0.16"
+  }
+}
