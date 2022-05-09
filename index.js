@@ -1,4 +1,5 @@
 const express = require('express');
+// const res = require('express/lib/response');
 const mongoose = require('mongoose');
 const path = require('path');
 
@@ -9,6 +10,7 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+//здесь будет создан путь "/users"
 app.use(routes);
 
 app.use((req, res, next) => {
@@ -16,10 +18,22 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '6278fdd7405a158358c9aeea',
+  };
+  next();
+});
+module.exports.createCard = (req, res) => {
+  console.log(req.user._id); // _id станет доступен
+};
+
 async function main() {
-  await mongoose.connect('mongodb://localhost:27017/mydb', {
-    userNewUrlParser: true,
-    userUnifieldTopology: false,
+  await
+  mongoose.connect('mongodb://localhost:27017/mestodb', {
+  //   useNewUrlParser: true,
+  //   useCreateIndex: true,
+  //   useFindAndModify: false,
   });
 
   app.listen(PORT, () => {

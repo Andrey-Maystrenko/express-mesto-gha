@@ -1,17 +1,96 @@
-const USERS = require('../users.json');
+const User = require("../models/User");
+const Card = require("../models/Card")
 
-const getUsers = (req, res) => {
-  res.status(200).send(USERS);
+const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({});
+    res.status(200).send(users);
+  } catch (err) {
+    res.status(500).send({
+      message: "Произошла ошибка в работе сервера",
+      err,
+    });
+  }
 };
 
-const getUserByID = (req, res) => {
-  res.status(200).send(USERS.find((user) => req.params.id === user._id));
+const getUserByID = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.kind === "ObjectId") {
+      res.status(400).send({
+        message: "Пользователя с таким id не найдено",
+        err,
+      });
+    }
+  }
 };
 
-const createUser = (req, res) => {
-  res.status(201).send(req.body);
+const createUser = async (req, res) => {
+  try {
+    const newUser = new User(req.body);
+    res.status(201).send(await newUser.save());
+  } catch (err) {
+    if (err.errors.name.name === "ValidationError") {
+      res.status(400).send({
+        message: "Введены ошибочные данные",
+        ...err,
+      });
+    }
+  }
+};
+
+// const getUsers = async (req, res) => {
+//   try {
+//     const users = await User.find({});
+//     res.status(200).send(users);
+//   } catch (err) {
+//     res.status(500).send({
+//       message: "Произошла ошибка в работе сервера",
+//       err,
+//     });
+//   }
+// };
+
+// const getUserByID = async (req, res) => {
+//   try {
+//     const user = await User.findById(req.params.userId);
+//     res.status(200).send(user);
+//   } catch (err) {
+//     if (err.kind === "ObjectId") {
+//       res.status(400).send({
+//         message: "Пользователя с таким id не найдено",
+//         err,
+//       });
+//     }
+//   }
+// };
+
+const createCard = async (req, res) => {
+  try {
+    const newCard = new Card(req.body);
+    res.status(201).send(await newCard.save());
+  } catch (err) {
+    if (err.errors.name.name === "ValidationError") {
+      res.status(400).send({
+        message: "Введены ошибочные данные",
+        ...err,
+      });
+    }
+  }
 };
 
 module.exports = {
-  getUsers, getUserByID, createUser,
+  getUsers,
+  getUserByID,
+  createUser,
+  createCard,
 };
+
+
+// const createUser = async (req, res) => {
+//   const { name, about, avatar } = req.body;
+//   const newUser = await User.create({ name, about, avatar });
+//   res.status(201).send(newUser);
+// };
