@@ -10,6 +10,13 @@ const app = express();
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+app.use((req, res, next) => {
+  req.user = {
+    _id: '6278fdd7405a158358c9aeea',
+  };
+  next();
+});
+
 //здесь будет создан путь "/users"
 app.use(routes);
 
@@ -18,12 +25,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6278fdd7405a158358c9aeea',
-  };
-  next();
-});
 module.exports.createCard = (req, res) => {
   console.log(req.user._id); // _id станет доступен
 };
