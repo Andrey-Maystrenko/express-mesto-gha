@@ -29,6 +29,10 @@ module.exports.createCard = (req, res) => {
   console.log(req.user._id); // _id станет доступен
 };
 
+module.exports.createUser = (req, res) => {
+  console.log(req.user._id); // _id станет доступен
+};
+
 async function main() {
   await
   mongoose.connect('mongodb://localhost:27017/mestodb', {

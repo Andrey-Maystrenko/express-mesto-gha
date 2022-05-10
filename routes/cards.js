@@ -7,7 +7,7 @@ cardsRoutes.get('/', getCards);
 
 cardsRoutes.post('/', express.json(), createCard);
 
-cardsRoutes.delete('/:userId', deleteCard);
+cardsRoutes.delete('/:cardId', deleteCard);
 
 module.exports = {
   cardsRoutes,

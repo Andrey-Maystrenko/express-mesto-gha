@@ -41,6 +41,20 @@ const createUser = async (req, res) => {
   }
 };
 
+const updateUserInfo = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).updateOne({ about: req.body.avatar });
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.kind === "ObjectId") {
+      res.status(400).send({
+        message: "Пользователя с таким id не найдено",
+        err
+      });
+    }
+  }
+};
+
 const getCards = async (req, res) => {
   try {
     const cards = await Card.find({});
@@ -53,18 +67,27 @@ const getCards = async (req, res) => {
   }
 };
 
+// const deleteCard = async (req, res) => {
+//   try {
+//     const deletedCard = await Card.deleteOne({ _id: req.params.cardId });
+//     res.status(200).send(deletedCard);
+//   } catch (err) {
+//     console.log(err);
+//     if (err.kind === "ObjectId") {
+//       res.status(400).send({
+//         message: "Карточки с таким id не найдено",
+//         err
+//       });
+//     }
+//   }
+// };
+
 const deleteCard = async (req, res) => {
   try {
-    // const user = await Card.findById(req.params.userId);
-    const deletedCard = await Card.deleteOne(req.params.userId);
+    const deletedCard = await Card.deleteOne({ _id: req.params.cardId });
     res.status(200).send(deletedCard);
   } catch (err) {
-    if (err.kind === "ObjectId") {
-      res.status(400).send({
-        message: "Карточки с таким id не найдено",
-        err
-      });
-    }
+    console.log(err);
   }
 };
 
@@ -73,7 +96,7 @@ const createCard = async (req, res) => {
     const newCard = new Card({
       name: req.body.name,
       link: req.body.link,
-      owner: req.user._id,
+      owner: req.user._id
     });
     res.status(201).send(await newCard.save());
     // } catch (err) {
@@ -98,7 +121,8 @@ module.exports = {
   createUser,
   createCard,
   getCards,
-  deleteCard
+  deleteCard,
+  updateUserInfo
 };
 
 // const createUser = async (req, res) => {
