@@ -20,7 +20,7 @@ const getUserByID = async (req, res) => {
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === "ObjectId") {
-      res.status(400).send({
+      res.status(404).send({
         message: "Пользователя с таким id не найдено",
         err
       });
@@ -43,23 +43,37 @@ const createUser = async (req, res) => {
 };
 
 const updateUserInfo = async (req, res) => {
-  console.log(req.body);
-  console.log(req.user._id);
-  const { name, about } = req.body;
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user._id,
-    { name, about },
-    { new: true }
-  );
-  console.log(JSON.stringify(updatedUser));
-  res.status(200).send(updatedUser);
-  // try {
-  // } catch (err) {
-  //   res.status(400).send({
-  //     message: "Пользователя с таким id не найдено",
-  //     err
-  //   });
-  // }
+  try {
+    const { name, about } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { name, about },
+      { new: true }
+    );
+    res.status(200).send(updatedUser);
+  } catch (err) {
+    res.status(400).send({
+      message: "Введены ошибочные данные",
+      err
+    });
+  }
+};
+
+const updateAvatar = async (req, res) => {
+  try {
+    const { avatar } = req.body;
+    const updatedAvatar = await User.findByIdAndUpdate(
+      req.user._id,
+      { avatar },
+      { new: true }
+    );
+    res.status(200).send(updatedAvatar);
+  } catch (err) {
+    res.status(400).send({
+      message: "Введены ошибочные данные",
+      err
+    });
+  }
 };
 
 const getCards = async (req, res) => {
@@ -79,7 +93,12 @@ const deleteCard = async (req, res) => {
     const deletedCard = await Card.deleteOne({ _id: req.params.cardId });
     res.status(200).send(deletedCard);
   } catch (err) {
-    console.log(err);
+    if (err.kind === "ObjectId") {
+      res.status(404).send({
+        message: "Карточки с таким id не найдено",
+        err
+      });
+    }
   }
 };
 
@@ -100,22 +119,40 @@ const createCard = async (req, res) => {
 };
 
 const likeCard = async (req, res) => {
-  console.log(req.params);
-  console.log(req.user);
-  const likedCard = await Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
-    { new: true }
-  );
-  res.status(200).send(likedCard);
+  try {
+    const likedCard = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
+      { new: true }
+    );
+    res.status(200).send(likedCard);
+  } catch (err) {
+    if (err.kind === "ObjectId") {
+      res.status(404).send({
+        message: "Карточки с таким id не найдено",
+        err
+      });
+    }
+  }
 };
 
-const dislikeCard = (req, res) =>
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: req.user._id } }, // убрать _id из массива
-    { new: true }
-  );
+const dislikeCard = async (req, res) => {
+  try {
+    const dislikedCard = await Card.findByIdAndUpdate(
+      req.params.cardId,
+      { $pull: { likes: req.user._id } }, // убрать _id из массива
+      { new: true }
+    );
+    res.status(200).send(dislikedCard);
+  } catch (err) {
+    if (err.kind === "ObjectId") {
+      res.status(404).send({
+        message: "Карточки с таким id не найдено",
+        err
+      });
+    }
+  }
+};
 
 module.exports = {
   getUsers,
@@ -126,7 +163,8 @@ module.exports = {
   deleteCard,
   updateUserInfo,
   likeCard,
-  dislikeCard
+  dislikeCard,
+  updateAvatar
 };
 
 // const deleteCard = async (req, res) => {
