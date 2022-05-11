@@ -1,10 +1,10 @@
-const express = require("express");
+const express = require('express');
 
 const routes = express.Router();
 
-const { usersRoutes } = require("./users");
+const { usersRoutes } = require('./users');
 
-const { cardsRoutes } = require("./cards");
+const { cardsRoutes } = require('./cards');
 
 routes.use('/users', usersRoutes);
 

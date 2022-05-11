@@ -23,7 +23,8 @@
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.29.4",
-    "lint": "^0.7.0"
+    "lint": "^0.7.0",
+    "nodemon": "^2.0.16"
   },
   "dependencies": {
     "express": "^4.18.1",
