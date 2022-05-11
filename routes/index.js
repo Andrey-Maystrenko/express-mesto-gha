@@ -6,9 +6,9 @@ const { usersRoutes } = require("./users");
 
 const { cardsRoutes } = require("./cards");
 
-routes.use("/users", usersRoutes);
+routes.use('/users', usersRoutes);
 
-routes.use("/cards", cardsRoutes);
+routes.use('/cards', cardsRoutes);
 
 module.exports = {
   routes,
