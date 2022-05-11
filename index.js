@@ -17,7 +17,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//здесь будет создан путь "/users"
+// здесь будет создан путь "/users"
 app.use(routes);
 
 app.use((req, res, next) => {
