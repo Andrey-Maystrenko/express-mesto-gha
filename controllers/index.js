@@ -129,7 +129,7 @@ const likeCard = async (req, res) => {
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(404).send({
-        message: 'Карточки с таким id не найдено',
+        message: 'Карточки с таким id не найдена',
         err,
       });
     }
@@ -147,7 +147,7 @@ const dislikeCard = async (req, res) => {
   } catch (err) {
     if (err.kind === 'ObjectId') {
       res.status(404).send({
-        message: 'Карточки с таким id не найдено',
+        message: 'Карточки с таким id не найдена',
         err,
       });
     }

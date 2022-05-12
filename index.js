@@ -20,18 +20,18 @@ app.use((req, res, next) => {
 // здесь будет создан путь "/users"
 app.use(routes);
 
-app.use((req, res, next) => {
-  console.log(req.method, req.url);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.method, req.url);
+//   next();
+// });
 
-module.exports.createCard = (req, res) => {
-  console.log(req.user._id); // _id станет доступен
-};
+// module.exports.createCard = (req) => {
+//   console.log(req.user._id); // _id станет доступен
+// };
 
-module.exports.createUser = (req, res) => {
-  console.log(req.user._id); // _id станет доступен
-};
+// module.exports.createUser = (req) => {
+//   console.log(req.user._id); // _id станет доступен
+// };
 
 async function main() {
   await
@@ -41,9 +41,11 @@ async function main() {
   //   useFindAndModify: false,
   });
 
-  app.listen(PORT, () => {
-    console.log(`Слушаем ${PORT} порт`);
-  });
+  // app.listen(PORT, () => {
+  //   console.log(`Слушаем ${PORT} порт`);
+  // });
+
+  app.listen(PORT);
 }
 
 main();
