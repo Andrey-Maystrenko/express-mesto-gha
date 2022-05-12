@@ -7,6 +7,10 @@ const { PORT = 3000 } = process.env;
 const { routes } = require('./routes');
 
 const app = express();
+// app.use((err, req, res, next) => {
+//   console.error(err.stack);
+//   res.status(500).send('Something broke!');
+// });
 
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -20,10 +24,7 @@ app.use((req, res, next) => {
 // здесь будет создан путь "/users"
 app.use(routes);
 
-// app.use((req, res, next) => {
-//   console.log(req.method, req.url);
-//   next();
-// });
+app.use('/*', express.json(), (err, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
 
 // module.exports.createCard = (req) => {
 //   console.log(req.user._id); // _id станет доступен
