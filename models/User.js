@@ -6,14 +6,15 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    minlenth: 2,
+    minlength: 2,
     maxlength: 30,
-    // validate: (v) => validator.isEmail(v),
+    // validate: { validator(v) { return validator.isLength(v); },
+    // message: 'Длина не соответствует ограничениям' },
   },
   about: {
     type: String,
     required: true,
-    minlenth: 2,
+    minlength: 2,
     maxlength: 30,
     // validate: (v) => validator.isLength(v),
   },

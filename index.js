@@ -24,7 +24,7 @@ app.use((req, res, next) => {
 // здесь будет создан путь "/users"
 app.use(routes);
 
-app.use('/*', express.json(), (err, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
+app.use('/*', express.json(), (req, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
 
 // module.exports.createCard = (req) => {
 //   console.log(req.user._id); // _id станет доступен

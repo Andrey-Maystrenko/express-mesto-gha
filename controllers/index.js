@@ -30,10 +30,13 @@ const getUserByID = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const newUser = new User(req.body);
-    res.status(201).send(await newUser.save());
+    // const newUser = new User(req.body);
+    // res.status(201).send(await newUser.save());
+    const newUser = await User.create(req.body);
+    res.status(201).send(newUser);
   } catch (err) {
-    if (err.errors.name.name === 'ValidationError') {
+    console.log(err.name);
+    if (err.name === 'ValidationError') {
       res.status(400).send({
         message: 'Введены ошибочные данные',
         ...err,
