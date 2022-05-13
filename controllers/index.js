@@ -17,11 +17,17 @@ const getUsers = async (req, res) => {
 const getUserByID = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    res.status(200).send(user);
-  } catch (err) {
-    if (err.kind === 'ObjectId') {
+    if (!user) {
       res.status(404).send({
         message: 'Пользователя с таким id не найдено',
+      });
+      return;
+    } res.status(200).send(user);
+  } catch (err) {
+    console.log(err, 'err.name', err.name, 'err.kind', err.kind);
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({
+        message: 'Недопустимый формат id',
         err,
       });
     }
@@ -53,7 +59,7 @@ const updateUserInfo = async (req, res) => {
       { name, about },
       { new: true, runValidators: true },
     );
-    res.status(200).send(updatedUser);
+    res.status(200).send({ data: updatedUser });
   } catch (err) {
     res.status(400).send({
       message: 'Введены ошибочные данные',
@@ -70,7 +76,7 @@ const updateAvatar = async (req, res) => {
       { avatar },
       { new: true, runValidators: true },
     );
-    res.status(200).send(updatedAvatar);
+    res.status(200).send({ data: updatedAvatar });
   } catch (err) {
     res.status(400).send({
       message: 'Введены ошибочные данные',
@@ -128,11 +134,17 @@ const likeCard = async (req, res) => {
       { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
       { new: true },
     );
+    if (!likeCard) {
+      res.status(404).send({
+        message: 'Карточка с таким id не найдена',
+      });
+      return;
+    }
     res.status(200).send(likedCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(404).send({
-        message: 'Карточки с таким id не найдена',
+      res.status(400).send({
+        message: 'Некорректный формат id карточки',
         err,
       });
     }
@@ -146,10 +158,16 @@ const dislikeCard = async (req, res) => {
       { $pull: { likes: req.user._id } }, // убрать _id из массива
       { new: true },
     );
+    if (!dislikedCard) {
+      res.status(404).send({
+        message: 'Карточка с таким id не найдена'
+      });
+      return;
+    }
     res.status(200).send(dislikedCard);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(404).send({
+      res.status(400).send({
         message: 'Карточки с таким id не найдена',
         err,
       });
