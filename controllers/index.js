@@ -24,7 +24,6 @@ const getUserByID = async (req, res) => {
       return;
     } res.status(200).send(user);
   } catch (err) {
-    console.log(err, 'err.name', err.name, 'err.kind', err.kind);
     if (err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Недопустимый формат id',
@@ -41,7 +40,6 @@ const createUser = async (req, res) => {
     const newUser = await User.create(req.body);
     res.status(201).send(newUser);
   } catch (err) {
-    console.log(err.name);
     if (err.name === 'ValidationError') {
       res.status(400).send({
         message: 'Введены ошибочные данные',
@@ -160,7 +158,7 @@ const dislikeCard = async (req, res) => {
     );
     if (!dislikedCard) {
       res.status(404).send({
-        message: 'Карточка с таким id не найдена'
+        message: 'Карточка с таким id не найдена',
       });
       return;
     }
