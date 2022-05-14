@@ -56,6 +56,7 @@ const updateUserInfo = async (req, res) => {
       res.status(400).send({
         message: 'Введены ошибочные данные',
       });
+      return;
     }
     const updatedUser = await User.findByIdAndUpdate(
       req.user._id,
@@ -78,6 +79,7 @@ const updateAvatar = async (req, res) => {
       res.status(400).send({
         message: 'Введены ошибочные данные',
       });
+      return;
     }
     const updatedAvatar = await User.findByIdAndUpdate(
       req.user._id,
