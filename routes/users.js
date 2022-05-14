@@ -6,7 +6,7 @@ const {
   createUser,
   updateUserInfo,
   updateAvatar,
-} = require('../controllers');
+} = require('../controllers/users');
 
 const usersRoutes = express.Router();
 
