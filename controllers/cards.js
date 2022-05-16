@@ -30,6 +30,8 @@ const deleteCard = async (req, res) => {
         message: 'Некорректный формат id',
         err,
       });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };
@@ -43,10 +45,11 @@ const createCard = async (req, res) => {
     });
     res.status(201).send(await newCard.save());
   } catch (err) {
-    res.status(400).send({
-      message: 'Введены ошибочные данные',
-      ...err,
-    });
+    if (err.name === 'ValidationError') {
+      res.status(400).send({ message: 'Введены некорректные данные' });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+    }
   }
 };
 
@@ -70,6 +73,8 @@ const likeCard = async (req, res) => {
         message: 'Некорректный формат id карточки',
         err,
       });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };
@@ -94,6 +99,8 @@ const dislikeCard = async (req, res) => {
         message: 'Некорректный формат id карточки',
         err,
       });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };

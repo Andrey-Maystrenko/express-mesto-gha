@@ -26,8 +26,10 @@ const getUserByID = async (req, res) => {
     if (err.kind === 'ObjectId') {
       res.status(400).send({
         message: 'Недопустимый формат id',
-        err,
+        ...err,
       });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };
@@ -44,6 +46,8 @@ const createUser = async (req, res) => {
         message: 'Введены ошибочные данные',
         ...err,
       });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };
@@ -64,10 +68,14 @@ const updateUserInfo = async (req, res) => {
     );
     res.status(200).send({ updatedUser });
   } catch (err) {
-    res.status(400).send({
-      message: 'Введены ошибочные данные',
-      ...err,
-    });
+    if (err.name === 'ValidationError') {
+      res.status(400).send({
+        message: 'Введены ошибочные данные',
+        ...err,
+      });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+    }
   }
 };
 
@@ -87,10 +95,14 @@ const updateAvatar = async (req, res) => {
     );
     res.status(200).send({ data: updatedAvatar });
   } catch (err) {
-    res.status(400).send({
-      message: 'Введены ошибочные данные',
-      ...err,
-    });
+    if (err.name === 'ValidationError') {
+      res.status(400).send({
+        message: 'Введены ошибочные данные',
+        ...err,
+      });
+    } else {
+      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+    }
   }
 };
 

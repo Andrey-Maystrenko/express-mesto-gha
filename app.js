@@ -1,7 +1,7 @@
 const express = require('express');
 // const res = require('express/lib/response');
 const mongoose = require('mongoose');
-const path = require('path');
+// const path = require('path');
 
 const { PORT = 3000 } = process.env;
 const { routes } = require('./routes');
@@ -12,7 +12,7 @@ const app = express();
 //   res.status(500).send('Something broke!');
 // });
 
-app.use(express.static(path.join(__dirname, 'public')));
+// app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
   req.user = {
@@ -21,7 +21,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// здесь будет создан путь "/users"
+// здесь будет создан путь "/users" и путь "/cards"
 app.use(routes);
 
 app.use('/*', express.json(), (req, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
