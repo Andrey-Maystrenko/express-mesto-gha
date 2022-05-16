@@ -14,11 +14,11 @@ usersRoutes.get('/', getUsers);
 
 usersRoutes.get('/:userId', getUserByID);
 
-usersRoutes.post('/', express.json(), createUser);
+usersRoutes.post('/', createUser);
 
-usersRoutes.patch('/me', express.json(), updateUserInfo);
+usersRoutes.patch('/me', updateUserInfo);
 
-usersRoutes.patch('/me/avatar', express.json(), updateAvatar);
+usersRoutes.patch('/me/avatar', updateAvatar);
 
 module.exports = {
   usersRoutes,
