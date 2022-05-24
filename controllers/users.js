@@ -1,4 +1,7 @@
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+
+const DUBLICATE_MONGOOSE_ERROR_CODE = 11000;
 // const res = require('express/lib/response');
 
 const getUsers = async (req, res) => {
@@ -35,22 +38,41 @@ const getUserByID = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  if (!email || !password) {
+    res.status(400).send({ message: 'Неправильные логин или пароль' });
+  }
+  const hash = await bcrypt.hash(password, 10);
   try {
-    // const newUser = new User(req.body);
-    // res.status(201).send(await newUser.save());
-    const newUser = await User.create(req.body);
-    res.status(201).send(newUser);
+    const newUser = await User.create({
+      name,
+      about,
+      avatar,
+      email,
+      password: hash,
+    });
+    res.status(201).send({ newUser });
   } catch (err) {
     if (err.name === 'ValidationError') {
       res.status(400).send({
         message: 'Введены ошибочные данные',
         ...err,
       });
+    }
+    if (err.code === DUBLICATE_MONGOOSE_ERROR_CODE) {
+      res.status(409).send({ message: 'Пользователь с таким email уже существует' });
     } else {
       res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
     }
   }
 };
+  // const { password, ...result } = newUser.toObject();
 
 const updateUserInfo = async (req, res) => {
   try {
@@ -113,3 +135,21 @@ module.exports = {
   updateUserInfo,
   updateAvatar,
 };
+
+// const createUser = async (req, res) => {
+//   try {
+//     // const newUser = new User(req.body);
+//     // res.status(201).send(await newUser.save());
+//     const newUser = await User.create(req.body);
+//     res.status(201).send(newUser);
+//   } catch (err) {
+//     if (err.name === 'ValidationError') {
+//       res.status(400).send({
+//         message: 'Введены ошибочные данные',
+//         ...err,
+//       });
+//     } else {
+//       res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+//     }
+//   }
+// };
