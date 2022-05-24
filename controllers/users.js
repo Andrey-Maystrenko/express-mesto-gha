@@ -1,4 +1,6 @@
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+// const res = require('express/lib/response');
 const User = require('../models/User');
 
 const DUBLICATE_MONGOOSE_ERROR_CODE = 11000;
@@ -74,6 +76,31 @@ const createUser = async (req, res) => {
 };
   // const { password, ...result } = newUser.toObject();
 
+const login = async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const user = await User.findOne({ email });
+    if (!user) {
+      res.status(409).send({ message: 'Неправильные логин или пароль' });
+      return;
+    }
+    const matched = await bcrypt.compare(password, user.password);
+    if (!matched) {
+      res.status(401).send({ message: 'Неправильные логин или пароль' });
+      return;
+    }
+    const token = jwt.sign(
+      { _id: user._id },
+      'some-secret-key',
+      { expiresIn: '7d' },
+    );
+    res.send({ token });
+    res.status(201).send({ message: 'Вы вошли в свою учетную запись' });
+  } catch (err) {
+    res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+  }
+};
+
 const updateUserInfo = async (req, res) => {
   try {
     const { name, about } = req.body;
@@ -132,6 +159,7 @@ module.exports = {
   getUsers,
   getUserByID,
   createUser,
+  login,
   updateUserInfo,
   updateAvatar,
 };
