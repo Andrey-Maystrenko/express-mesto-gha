@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { isAuthorized } = require('../middlewares/auth');
 // const res = require('express/lib/response');
 const User = require('../models/User');
 
@@ -7,6 +8,11 @@ const DUBLICATE_MONGOOSE_ERROR_CODE = 11000;
 // const res = require('express/lib/response');
 
 const getUsers = async (req, res) => {
+  const matched = await isAuthorized(req.headers.authorization);
+  if (!matched) {
+    res.status(401).send({ message: 'Нет доступа' });
+    return;
+  }
   try {
     const users = await User.find({});
     res.status(200).send(users);
@@ -95,6 +101,7 @@ const login = async (req, res) => {
       { expiresIn: '7d' },
     );
     res.send({ token });
+    // console.log(token);
     res.status(201).send({ message: 'Вы вошли в свою учетную запись' });
   } catch (err) {
     res.status(500).send({ message: 'Произошла ошибка в работе сервера' });

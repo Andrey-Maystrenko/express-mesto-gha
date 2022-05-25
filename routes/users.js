@@ -16,6 +16,8 @@ usersRoutes.get('/:userId', getUserByID);
 
 // usersRoutes.post('/', createUser);
 
+// usersRoutes.get('/me', getUserByID);
+
 usersRoutes.patch('/me', updateUserInfo);
 
 usersRoutes.patch('/me/avatar', updateAvatar);
