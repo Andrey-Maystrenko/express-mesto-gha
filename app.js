@@ -8,12 +8,12 @@ const { routes } = require('./routes');
 
 const app = express();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6278fdd7405a158358c9aeea',
-  };
-  next();
-});
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '6278fdd7405a158358c9aeea',
+//   };
+//   next();
+// });
 
 app.use(express.json());
 

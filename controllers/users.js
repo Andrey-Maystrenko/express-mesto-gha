@@ -45,6 +45,36 @@ const getUserByID = async (req, res) => {
   }
 };
 
+const userProfile = async (req, res) => {
+  const matched = await isAuthorized(req.headers.authorization);
+  if (!matched) {
+    res.status(401).send({ message: 'Нет доступа' });
+    return;
+  }
+  // req.user = req.headers.authorization;
+  try {
+    console.log(req.user);
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      res.status(404).send({
+        message: 'Пользователя с таким id не найдено',
+      });
+      return;
+    }
+    res.status(200).send(user);
+  } catch (err) {
+    if (err.kind === 'ObjectId') {
+      res.status(400).send({
+        message: 'Недопустимый формат id',
+        ...err,
+      });
+    } else {
+      // res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      res.status(500).send(req.user);
+    }
+  }
+};
+
 const createUser = async (req, res) => {
   const {
     name,
@@ -102,7 +132,7 @@ const login = async (req, res) => {
     );
     res.send({ token });
     // console.log(token);
-    res.status(201).send({ message: 'Вы вошли в свою учетную запись' });
+    // res.status(201).send({ message: 'Вы вошли в свою учетную запись' });
   } catch (err) {
     res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
   }
@@ -169,6 +199,7 @@ module.exports = {
   login,
   updateUserInfo,
   updateAvatar,
+  userProfile,
 };
 
 // const createUser = async (req, res) => {
