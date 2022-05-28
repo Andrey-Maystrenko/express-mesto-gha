@@ -25,6 +25,11 @@ const getUsers = async (req, res) => {
 };
 
 const getUserByID = async (req, res) => {
+  const matched = await isAuthorized(req.headers.authorization);
+  if (!matched) {
+    res.status(401).send({ message: 'Нет доступа' });
+    return;
+  }
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
@@ -51,9 +56,7 @@ const userProfile = async (req, res) => {
     res.status(401).send({ message: 'Нет доступа' });
     return;
   }
-  // req.user = req.headers.authorization;
   try {
-    console.log(req.user);
     const user = await User.findById(req.user._id);
     if (!user) {
       res.status(404).send({
@@ -139,6 +142,11 @@ const login = async (req, res) => {
 };
 
 const updateUserInfo = async (req, res) => {
+  const matched = await isAuthorized(req.headers.authorization);
+  if (!matched) {
+    res.status(401).send({ message: 'Нет доступа' });
+    return;
+  }
   try {
     const { name, about } = req.body;
     if (!req.body.name || !req.body.about) {
@@ -166,6 +174,11 @@ const updateUserInfo = async (req, res) => {
 };
 
 const updateAvatar = async (req, res) => {
+  const matched = await isAuthorized(req.headers.authorization);
+  if (!matched) {
+    res.status(401).send({ message: 'Нет доступа' });
+    return;
+  }
   try {
     const { avatar } = req.body;
     if (!req.body.avatar) {
