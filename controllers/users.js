@@ -4,15 +4,18 @@ const { isAuthorized } = require('../middlewares/auth');
 // const res = require('express/lib/response');
 const User = require('../models/User');
 const NotFoundError = require('../errors/not-found-error');
-const BadRequest = require('../errors/bad-request');
+const BadRequestError = require('../errors/bad-request-error');
+const UnauthorizedError = require('../errors/unauthorized-error');
+const ConflictError = require('../errors/conflict-error');
 
 const DUBLICATE_MONGOOSE_ERROR_CODE = 11000;
 // const res = require('express/lib/response');
 
-const getUsers = async (req, res) => {
+const getUsers = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
-    res.status(401).send({ message: 'Нет доступа' });
+    // res.status(401).send({ message: 'Нет доступа' });
+    next(new UnauthorizedError('Нет доступа'));
     return;
   }
   try {
@@ -29,7 +32,8 @@ const getUsers = async (req, res) => {
 const getUserByID = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
-    res.status(401).send({ message: 'Нет доступа' });
+    // res.status(401).send({ message: 'Нет доступа' });
+    next(new UnauthorizedError('Нет доступа'));
     return;
   }
   try {
@@ -40,40 +44,43 @@ const getUserByID = async (req, res, next) => {
     } res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      next(new BadRequest('Недопустимый формат id'));
+      next(new BadRequestError('Недопустимый формат id'));
     }
   }
 };
 
-const userProfile = async (req, res) => {
+const userProfile = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
-    res.status(401).send({ message: 'Нет доступа' });
+    // res.status(401).send({ message: 'Нет доступа' });
+    next(new UnauthorizedError('Нет доступа'));
     return;
   }
   try {
     const user = await User.findById(req.user._id);
     if (!user) {
-      res.status(404).send({
-        message: 'Пользователя с таким id не найдено',
-      });
+      // res.status(404).send({
+      //   message: 'Пользователя с таким id не найдено',
+      // });
+      next(new NotFoundError('Пользователя с таким id не найдено'));
       return;
     }
     res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(400).send({
-        message: 'Недопустимый формат id',
-        ...err,
-      });
-    } else {
-      // res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
-      res.status(500).send(req.user);
+    //   res.status(400).send({
+    //     message: 'Недопустимый формат id',
+    //     ...err,
+    //   });
+    // } else {
+    //   // res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+    //   res.status(500).send(req.user);
+      next(new BadRequestError('Недопустимый формат id'));
     }
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const {
     name,
     about,
@@ -82,7 +89,9 @@ const createUser = async (req, res) => {
     password,
   } = req.body;
   if (!email || !password) {
-    res.status(400).send({ message: 'Неправильные логин или пароль' });
+    // res.status(400).send({ message: 'Неправильные логин или пароль' });
+    next(new BadRequestError('Неправильные логин или пароль'));
+    return;
   }
   const hash = await bcrypt.hash(password, 10);
   try {
@@ -96,31 +105,35 @@ const createUser = async (req, res) => {
     res.status(201).send({ newUser });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({
-        message: 'Введены ошибочные данные',
-        ...err,
-      });
+      // res.status(400).send({
+      //   message: 'Введены ошибочные данные',
+      //   ...err,
+      // });
+      next(new BadRequestError('Введены ошибочные данные'));
     }
     if (err.code === DUBLICATE_MONGOOSE_ERROR_CODE) {
-      res.status(409).send({ message: 'Пользователь с таким email уже существует' });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      // res.status(409).send({ message: 'Пользователь с таким email уже существует' });
+    // } else {
+    //   res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      next(new ConflictError('Пользователь с таким email уже существует'));
     }
   }
 };
   // const { password, ...result } = newUser.toObject();
 
-const login = async (req, res) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
   try {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      res.status(409).send({ message: 'Неправильные логин или пароль' });
+      // res.status(404).send({ message: 'Неправильные логин или пароль' });
+      next(new NotFoundError('Неправильные логин или пароль'));
       return;
     }
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
-      res.status(401).send({ message: 'Неправильные логин или пароль' });
+      // res.status(401).send({ message: 'Неправильные логин или пароль' });
+      next(new UnauthorizedError('Неправильные логин или пароль'));
       return;
     }
     const token = jwt.sign(
@@ -136,18 +149,20 @@ const login = async (req, res) => {
   }
 };
 
-const updateUserInfo = async (req, res) => {
+const updateUserInfo = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
-    res.status(401).send({ message: 'Нет доступа' });
+    // res.status(401).send({ message: 'Нет доступа' });
+    next(new UnauthorizedError('Нет доступа'));
     return;
   }
   try {
     const { name, about } = req.body;
     if (!req.body.name || !req.body.about) {
-      res.status(400).send({
-        message: 'Введены ошибочные данные',
-      });
+      // res.status(400).send({
+      //   message: 'Введены ошибочные данные',
+      // });
+      next(new BadRequestError('Введены ошибочные данные'));
       return;
     }
     const updatedUser = await User.findByIdAndUpdate(
@@ -158,28 +173,31 @@ const updateUserInfo = async (req, res) => {
     res.status(200).send({ updatedUser });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({
-        message: 'Введены ошибочные данные',
-        ...err,
-      });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      // res.status(400).send({
+      //   message: 'Введены ошибочные данные',
+      //   ...err,
+      // });
+    // } else {
+    //   res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      next(new BadRequestError('Введены ошибочные данные'));
     }
   }
 };
 
-const updateAvatar = async (req, res) => {
+const updateAvatar = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
-    res.status(401).send({ message: 'Нет доступа' });
+    // res.status(401).send({ message: 'Нет доступа' });
+    next(new UnauthorizedError('Нет доступа'));
     return;
   }
   try {
     const { avatar } = req.body;
     if (!req.body.avatar) {
-      res.status(400).send({
-        message: 'Введены ошибочные данные',
-      });
+      // res.status(400).send({
+      //   message: 'Введены ошибочные данные',
+      // });
+      next(new BadRequestError('Введены ошибочные данные'));
       return;
     }
     const updatedAvatar = await User.findByIdAndUpdate(
@@ -190,12 +208,13 @@ const updateAvatar = async (req, res) => {
     res.status(200).send({ data: updatedAvatar });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      res.status(400).send({
-        message: 'Введены ошибочные данные',
-        ...err,
-      });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+    //   res.status(400).send({
+    //     message: 'Введены ошибочные данные',
+    //     ...err,
+    //   });
+    // } else {
+    //   res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      next(new BadRequestError('Введены ошибочные данные'));
     }
   }
 };
