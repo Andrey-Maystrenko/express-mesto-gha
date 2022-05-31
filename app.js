@@ -1,7 +1,9 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const { login, createUser } = require('./controllers/users');
 // const { auth } = require('./middlewares/auth');
+const { errors } = require('celebrate');
+const { celebrate, Joi } = require('celebrate');
+const { login, createUser } = require('./controllers/users');
 
 const { PORT = 3000 } = process.env;
 const { routes } = require('./routes');
@@ -13,11 +15,26 @@ app.use(express.json());
 // здесь будет создан путь "/users" и путь "/cards"
 app.use(routes);
 
-app.post('/signin', login);
+app.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2).max(30),
+  }),
+}), login);
 
-app.post('/signup', createUser);
+app.post('/signup', celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    about: Joi.string().required().min(2).max(30),
+    avatar: Joi.string().required().min(9),
+    email: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2).max(30),
+  }),
+}), createUser);
 
 app.use('/*', (req, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
+
+app.use(errors()); // обработчик ошибок celebrate
 
 app.use((err, req, res, next) => {
   // если у ошибки нет статуса, выставляем 500
