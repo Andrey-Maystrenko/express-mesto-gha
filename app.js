@@ -19,6 +19,21 @@ app.post('/signup', createUser);
 
 app.use('/*', (req, res) => { res.status(404).send({ message: 'Введен некорректный путь' }); });
 
+app.use((err, req, res, next) => {
+  // если у ошибки нет статуса, выставляем 500
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      // проверяем статус и выставляем сообщение в зависимости от него
+      message: statusCode === 500
+        ? 'Произошла ошибка в работе сервера'
+        : message,
+    });
+  next();
+});
+
 async function main() {
   await
   mongoose.connect('mongodb://localhost:27017/mestodb', {

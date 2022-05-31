@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const { isAuthorized } = require('../middlewares/auth');
 // const res = require('express/lib/response');
 const User = require('../models/User');
+const NotFoundError = require('../errors/not-found-error');
+const BadRequest = require('../errors/bad-request');
 
 const DUBLICATE_MONGOOSE_ERROR_CODE = 11000;
 // const res = require('express/lib/response');
@@ -24,7 +26,7 @@ const getUsers = async (req, res) => {
   }
 };
 
-const getUserByID = async (req, res) => {
+const getUserByID = async (req, res, next) => {
   const matched = await isAuthorized(req.headers.authorization);
   if (!matched) {
     res.status(401).send({ message: 'Нет доступа' });
@@ -33,19 +35,12 @@ const getUserByID = async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) {
-      res.status(404).send({
-        message: 'Пользователя с таким id не найдено',
-      });
+      next(new NotFoundError('Нет пользователя с таким id'));
       return;
     } res.status(200).send(user);
   } catch (err) {
     if (err.kind === 'ObjectId') {
-      res.status(400).send({
-        message: 'Недопустимый формат id',
-        ...err,
-      });
-    } else {
-      res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+      next(new BadRequest('Недопустимый формат id'));
     }
   }
 };
@@ -118,7 +113,7 @@ const createUser = async (req, res) => {
 const login = async (req, res) => {
   const { email, password } = req.body;
   try {
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
       res.status(409).send({ message: 'Неправильные логин или пароль' });
       return;
@@ -231,4 +226,22 @@ module.exports = {
 //       res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
 //     }
 //   }
-// };
+// }
+
+// if (!user) {
+//   res.status(404).send({
+//     message: 'Пользователя с таким id не найдено',
+//   });
+//   return;
+// } res.status(200).send(user);
+
+// } catch (err) {
+//   if (err.kind === 'ObjectId') {
+//     res.status(400).send({
+//       message: 'Недопустимый формат id',
+//       ...err,
+//     });
+//   } else {
+//     res.status(500).send({ message: 'Произошла ошибка в работе сервера' });
+//   }
+// }
