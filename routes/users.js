@@ -50,7 +50,7 @@ usersRoutes.patch('/me/avatar', celebrate({
     authorization: Joi.string().required(),
   }),
   body: Joi.object().keys({
-    avatar: Joi.string().required().min(9),
+    avatar: Joi.string().required().pattern(/(https?:\/\/)(w{3}\.)?(((\d{1,3}\.){3}\d{1,3})|((\w-?)+\.(ru|com)))(:\d{2,5})?((\/.+)+)?\/?#?/),
   }),
 }), updateAvatar);
 
