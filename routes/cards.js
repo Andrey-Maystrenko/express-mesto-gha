@@ -10,12 +10,6 @@ const {
 
 const cardsRoutes = express.Router();
 
-// cardsRoutes.get('/', celebrate({
-//   headers: Joi.object().keys({
-//     authorization: Joi.string().required(),
-//   }),
-// }), getCards);
-
 cardsRoutes.get('/', getCards);
 
 cardsRoutes.post('/', celebrate({
