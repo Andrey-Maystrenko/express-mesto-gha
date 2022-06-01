@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-// const { auth } = require('./middlewares/auth');
 const { errors } = require('celebrate');
 const { celebrate, Joi } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
@@ -60,14 +59,3 @@ async function main() {
 }
 
 main();
-
-// app.use(auth);
-
-// app.use('/cards', require('./routes/cards'));
-
-// app.use((req, res, next) => {
-//   req.user = {
-//     _id: '6278fdd7405a158358c9aeea',
-//   };
-//   next();
-// });
