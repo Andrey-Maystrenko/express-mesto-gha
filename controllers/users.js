@@ -102,7 +102,8 @@ const createUser = async (req, res, next) => {
       email,
       password: hash,
     });
-    res.status(201).send({ newUser });
+    const { password: removedPassword, ...user } = newUser.toObject();
+    res.status(201).send({ user });
   } catch (err) {
     if (err.name === 'ValidationError') {
       // res.status(400).send({
@@ -127,7 +128,7 @@ const login = async (req, res, next) => {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       // res.status(404).send({ message: 'Неправильные логин или пароль' });
-      next(new NotFoundError('Неправильные логин или пароль'));
+      next(new UnauthorizedError('Неправильные логин или пароль'));
       return;
     }
     const matched = await bcrypt.compare(password, user.password);
