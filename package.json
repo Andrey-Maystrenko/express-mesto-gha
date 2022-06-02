@@ -32,6 +32,8 @@
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
     "express": "^4.18.1",
+    "express-rate-limit": "^6.4.0",
+    "helmet": "^5.1.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^6.3.2",
     "nodemon": "^2.0.16",
